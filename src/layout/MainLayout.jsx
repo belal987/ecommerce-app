@@ -34,9 +34,15 @@ const MainLayout = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-10">
-            {["New Arrivals", "Women", "Men", "Home", "Sale"].map((item) => (
-              <Link key={item} to="/" className="text-[11px] uppercase tracking-widest font-semibold hover:text-[var(--accent-color)] transition-colors">
-                {item}
+            {[
+              { label: "New Arrivals", path: "/new-arrivals" },
+              { label: "Women", path: "/women" },
+              { label: "Men", path: "/men" },
+              { label: "Home", path: "/home-collection" },
+              { label: "Sale", path: "/sale" },
+            ].map((item) => (
+              <Link key={item.label} to={item.path} className="text-[11px] uppercase tracking-widest font-semibold hover:text-[var(--accent-color)] transition-colors">
+                {item.label}
               </Link>
             ))}
           </nav>

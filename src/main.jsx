@@ -13,6 +13,8 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import CategoryPage from "./pages/CategoryPage";
+
 const router = createBrowserRouter(
   [
     {
@@ -21,6 +23,28 @@ const router = createBrowserRouter(
       children: [
         { index: true, element: <ProductsList /> },
         { path: "/product/:id", element: <ProductDetails /> },
+        
+        // Category Routes
+        { 
+          path: "/new-arrivals", 
+          element: <CategoryPage categoryId="" initialFilters={{ limit: 12 }} /> 
+        },
+        { 
+          path: "/women", 
+          element: <CategoryPage categoryId="1" /> 
+        },
+        { 
+          path: "/men", 
+          element: <CategoryPage categoryId="2" /> 
+        },
+        { 
+          path: "/home-collection", 
+          element: <CategoryPage categoryId="3" /> 
+        },
+        { 
+          path: "/sale", 
+          element: <CategoryPage categoryId="" initialFilters={{ priceMax: "100" }} /> 
+        },
 
         // Protected route — must be logged in
         {

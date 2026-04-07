@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "homepage": "https://belal987.github.io/ecommerce-app",
-
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -22,6 +21,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lucide-react": "^1.7.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.72.0",
@@ -48,7 +48,5 @@
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
     "vite": "^7.1.7"
-    
   }
-  
 }

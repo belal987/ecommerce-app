@@ -2,64 +2,60 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../store/cartSlice";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Star, ShoppingCart } from "lucide-react";
 
-const StarRating = ({ rating = 4 }) => (
-  <div className="flex gap-0.5">
-    {[1, 2, 3, 4, 5].map((s) => (
-      <span key={s} className={`text-sm ${s <= rating ? "text-yellow-400" : "text-gray-300"}`}>★</span>
-    ))}
-  </div>
-);
-
-export default function ProductCard({ id, title, price, image, inStock = true }) {
+export default function ProductCard({ id, title, price, image, categoryName = "Collection", inStock = true }) {
   const navigate = useNavigate();
-  const dispatch = useDispatch();   // ← Redux
+  const dispatch = useDispatch();
 
   return (
     <Card
-      className="overflow-hidden hover:shadow-md transition-shadow duration-200 p-0 cursor-pointer"
+      className="border-none shadow-none bg-transparent group cursor-pointer"
       onClick={() => navigate(`/product/${id}`)}
     >
-      <CardContent className="p-0">
-        <div className="relative bg-gray-50 h-48 flex items-center justify-center p-4">
-          <Badge className={`absolute top-3 left-3 text-xs ${
-            inStock ? "bg-green-500 hover:bg-green-500" : "bg-red-500 hover:bg-red-500"
-          } text-white`}>
-            {inStock ? "In stock" : "Out of stock"}
-          </Badge>
+      <CardContent className="p-0 space-y-5">
+        <div className="relative aspect-[3/4] bg-[#F2F0EA] overflow-hidden">
+          {/* Badge */}
+          <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-[#C2714F] text-white text-[9px] font-bold uppercase tracking-widest">
+             {price < 100 ? "Sale" : "New"}
+          </div>
+
+          {/* Product Image */}
           <img
-            src={image || "https://placehold.co/200x160?text=No+Image"}
+            src={image || "https://placehold.co/400x533?text=Product"}
             alt={title}
-            className="h-36 object-contain"
-            onError={(e) => (e.target.src = "https://placehold.co/200x160?text=No+Image")}
+            className="w-full h-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
+            onError={(e) => (e.target.src = "https://placehold.co/400x533?text=Product")}
           />
+
+          {/* Cart Icon Hover */}
+          <button 
+            className="absolute bottom-6 right-6 w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center translate-y-20 group-hover:translate-y-0 transition-transform duration-500 hover:bg-[#1A1A1A] hover:text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(addToCart({ id, title, price, image }));
+            }}
+          >
+            <ShoppingCart className="w-4 h-4" />
+          </button>
         </div>
 
-        <div className="p-4">
-          <h2 className="font-semibold text-sm text-gray-900 truncate mb-1">{title}</h2>
-          <p className="text-xs text-gray-500 truncate mb-2">Premium quality product</p>
-          <StarRating rating={4} />
-          <div className="flex items-center justify-between mt-3">
-            <span className="font-bold text-gray-900">
-              <sup className="text-xs font-normal">$</sup>{price}
-              <sup className="text-xs font-normal">00</sup>
-            </span>
-            <Button
-              size="sm"
-              variant={inStock ? "default" : "outline"}
-              className="rounded-full text-xs px-4"
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch(addToCart({ id, title, price, image })); // ← dispatch
-              }}
-            >
-              Add to Cart
-            </Button>
+        <div className="space-y-1">
+          <div className="flex justify-between items-start">
+             <div>
+                <h3 className="font-semibold text-sm text-[#1A1A1A] line-clamp-1">{title}</h3>
+                <p className="text-[10px] uppercase tracking-widest text-[#999] font-medium leading-loose">
+                  {categoryName}
+                </p>
+             </div>
+             <span className="text-sm font-bold text-[#1A1A1A]">${price}</span>
+          </div>
+          
+          <div className="flex items-center gap-1 pt-1 opacity-60">
+             {[1,2,3,4,5].map(s => <Star key={s} className="w-2.5 h-2.5 fill-[#C2714F] text-[#C2714F]" />)}
           </div>
         </div>
       </CardContent>
     </Card>
   );
-}
+}

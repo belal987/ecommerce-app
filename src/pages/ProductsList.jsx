@@ -1,107 +1,202 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts, nextPage, prevPage } from "../store/productsSlice";
+import { fetchProducts, setFilter, resetFilters, fetchCategories } from "../store/productsSlice";
 import ProductCard from "../components/ProductCard";
-import FilterSidebar from "../components/FilterSidebar";
+import { ArrowRight, Star, Search, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, PackageSearch, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export default function ProductsList() {
   const dispatch = useDispatch();
-  const { items, isLoading, error, offset, limit, filters } = useSelector((state) => state.products);
+  const { items, categories, isLoading, error, filters } = useSelector((state) => state.products);
 
   useEffect(() => {
-    dispatch(fetchProducts({ offset, limit, ...filters }));
-  }, [dispatch, offset, limit, filters]);
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchProducts({ offset: 0, limit: 12, ...filters }));
+  }, [dispatch, filters]);
+
+  const handleFilterChange = (key, value) => {
+    dispatch(setFilter({ [key]: value }));
+  };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
-      {/* Sidebar - Desktop Sticky */}
-      <aside className="w-full lg:w-80 flex-shrink-0">
-        <FilterSidebar />
-      </aside>
+    <div className="space-y-32 pb-20">
+      {/* Hero Section */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 min-h-[80vh] bg-[#F2F0EA] overflow-hidden">
+        <div className="flex flex-col justify-center px-8 lg:px-24 py-20 space-y-8 animate-in fade-in slide-in-from-left duration-1000">
+          <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#C2714F]">SS 2026 Collection</p>
+          <h1 className="text-6xl md:text-8xl serif leading-[0.9] tracking-tighter">
+            Wear what <br /> you <span className="italic-serif text-[#C2714F]">truly</span> <br /> love.
+          </h1>
+          <p className="text-sm text-[#6B6B6B] max-w-sm leading-relaxed">
+            Timeless pieces crafted from sustainable materials. Designed with intention, made to last a lifetime.
+          </p>
+          <div className="flex gap-4 pt-4">
+            <Button variant="outline" className="rounded-none px-12 h-14 border-black text-[11px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all">Shop Women</Button>
+            <Button variant="outline" className="rounded-none px-12 h-14 border-black text-[11px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all">Shop Men</Button>
+          </div>
+        </div>
+        <div className="relative bg-[#D9D7D0] flex items-center justify-center p-12 overflow-hidden group">
+          <div className="absolute inset-0 opacity-20 grayscale scale-150 blur-xl transition-transform duration-1000 group-hover:scale-125">
+             {items[0] && <img src={items[0].images?.[0]} alt="" className="w-full h-full object-cover" />}
+          </div>
+          <div className="relative z-10 bg-white/40 backdrop-blur-xl p-8 shadow-2xl skew-y-1 transform transition-transform duration-700 hover:skew-y-0">
+             <div className="w-64 h-80 bg-[#E5E5E5] mb-4 overflow-hidden">
+                {items[0] && <img src={items[0].images?.[0]} alt="" className="w-full h-full object-cover" />}
+             </div>
+             <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest mb-1">{items[0]?.category?.name || "Featured"}</p>
+                  <h3 className="serif text-lg">{items[0]?.title || "Classic Silk Dress"}</h3>
+                </div>
+                <span className="text-sm font-bold">${items[0]?.price}</span>
+             </div>
+          </div>
+          <div className="absolute -right-20 bottom-10 text-[20vw] font-black text-black/5 select-none pointer-events-none serif">SS26</div>
+        </div>
+      </section>
 
-      {/* Main Content Area */}
-      <main className="flex-1">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Explore Treasures</h1>
-            <p className="text-gray-500 text-sm font-medium">Curating the best products just for you</p>
+      {/* Main Collections Grid */}
+      <section className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+          <div className="space-y-2">
+             <h2 className="serif text-4xl">Curated collection</h2>
+             <p className="text-xs text-[#999] uppercase tracking-widest">Handpicked for your effortless style</p>
           </div>
           
-          <div className="text-xs font-semibold px-4 py-2 bg-gray-50 rounded-full text-gray-400 border border-gray-100 flex items-center gap-2">
-            <PackageSearch className="w-4 h-4 text-indigo-500" />
-            Displaying {items.length} items
+          <div className="flex flex-col sm:flex-row items-center gap-6 w-full md:w-auto">
+             {/* Search Bar */}
+             <div className="relative w-full sm:w-64 group">
+                <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#999] group-focus-within:text-[var(--accent-color)] transition-colors" />
+                <Input 
+                  placeholder="SEARCH CATALOGUE" 
+                  className="border-none rounded-none border-b border-black/5 focus-visible:ring-0 focus-visible:border-black pl-6 text-[10px] uppercase tracking-widest h-10 bg-transparent transition-all"
+                  value={filters.title}
+                  onChange={(e) => handleFilterChange("title", e.target.value)}
+                />
+             </div>
+             
+             {/* Simple Category Filter */}
+             <div className="flex items-center gap-4 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
+                <button 
+                  onClick={() => handleFilterChange("categoryId", "")}
+                  className={`text-[10px] uppercase tracking-[0.2em] font-bold whitespace-nowrap pb-1 transition-all ${!filters.categoryId ? "border-b-2 border-[#C2714F] text-[#C2714F]" : "text-[#999] hover:text-black"}`}
+                >
+                  All
+                </button>
+                {categories.slice(0, 5).map(cat => (
+                  <button 
+                    key={cat.id}
+                    onClick={() => handleFilterChange("categoryId", cat.id)}
+                    className={`text-[10px] uppercase tracking-[0.2em] font-bold whitespace-nowrap pb-1 transition-all ${filters.categoryId === cat.id ? "border-b-2 border-[#C2714F] text-[#C2714F]" : "text-[#999] hover:text-black"}`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+             </div>
+
+             {(filters.title || filters.categoryId) && (
+               <button onClick={() => dispatch(resetFilters())} className="text-[#C2714F] hover:rotate-90 transition-transform p-1">
+                 <X className="w-4 h-4" />
+               </button>
+             )}
           </div>
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 animate-pulse">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-gray-50 h-80 rounded-3xl border border-gray-100 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-indigo-100 animate-spin" />
-              </div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map(i => <div key={i} className="aspect-[3/4] bg-[#F7F6F2] animate-pulse" />)}
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-8 rounded-3xl text-center shadow-sm">
-            <p className="font-semibold text-lg mb-2">Oops! Something went wrong.</p>
-            <p className="text-sm text-red-500/80">{error}</p>
-          </div>
-        ) : items.length === 0 ? (
-          <div className="bg-gray-50 border border-dashed border-gray-200 py-16 rounded-3xl text-center space-y-4">
-            <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto">
-              <PackageSearch className="w-8 h-8 text-gray-300" />
-            </div>
-            <p className="text-gray-500 font-medium">No products match your search criteria.</p>
-            <Button size="sm" variant="outline" className="rounded-xl px-6" onClick={() => window.location.reload()}>
-              Clear Search
-            </Button>
-          </div>
+           <p className="text-center py-20 text-red-400">Error loading products.</p>
         ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in zoom-in-95 duration-500">
-              {items.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  image={product.images?.[0]}
-                  categoryName={product.category?.name}
-                  inStock={Math.random() > 0.2}
-                />
-              ))}
-            </div>
-
-            {/* Premium Pagination */}
-            <div className="flex items-center justify-between mt-12 bg-white p-4 rounded-3xl border border-gray-100 shadow-sm">
-              <span className="text-sm font-medium text-gray-400 ml-2">
-                Page <span className="text-gray-900 font-bold">{offset / limit + 1}</span>
-              </span>
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => dispatch(prevPage())}
-                  disabled={offset === 0}
-                  className="rounded-2xl px-5 h-11 border-gray-100 hover:border-indigo-100 hover:bg-indigo-50/50 hover:text-indigo-600 transition-all font-semibold text-sm flex items-center gap-2 group"
-                >
-                  <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                  Previous
-                </Button>
-                <Button
-                  onClick={() => dispatch(nextPage())}
-                  disabled={items.length < limit}
-                  className="rounded-2xl px-6 h-11 bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all font-semibold text-sm flex items-center gap-2 group"
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </div>
-            </div>
-          </>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+            {items.slice(0, 4).map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                title={product.title}
+                price={product.price}
+                image={product.images?.[0]}
+                categoryName={product.category?.name}
+              />
+            ))}
+          </div>
         )}
-      </main>
+      </section>
+
+      {/* Bento Banners */}
+      <section className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+         <div className="relative h-[600px] bg-[#1A1A1A] text-white p-12 flex flex-col justify-end overflow-hidden group">
+            <div className="absolute inset-0 opacity-40 group-hover:scale-105 transition-transform duration-1000 grayscale">
+              {items[4] && <img src={items[4].images?.[0]} alt="" className="w-full h-full object-cover" />}
+            </div>
+            <div className="relative z-10 space-y-6">
+              <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400">Limited Edition</p>
+              <h2 className="serif text-5xl leading-tight">The summer <br /> linen collection</h2>
+              <button className="flex items-center gap-2 group text-[11px] uppercase tracking-[0.2em] font-bold border-b border-white pb-1 w-fit mt-8">
+                Shop Linen <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+         </div>
+         <div className="relative h-[600px] bg-[#F2F0EA] p-12 flex flex-col justify-end overflow-hidden group">
+            <div className="absolute inset-0 opacity-30 group-hover:scale-105 transition-transform duration-1000">
+               {items[5] && <img src={items[5].images?.[0]} alt="" className="w-full h-full object-cover" />}
+            </div>
+            <div className="relative z-10 space-y-6">
+              <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#999]">For the home</p>
+              <h2 className="serif text-5xl leading-tight">Curated home <br /> essentials</h2>
+              <button className="flex items-center gap-2 group text-[11px] uppercase tracking-[0.2em] font-bold border-b border-black pb-1 w-fit mt-8">
+                Explore <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+         </div>
+      </section>
+
+      {/* Second Showcase Section */}
+      <section className="max-w-7xl mx-auto px-6">
+        <div className="flex justify-between items-end mb-12">
+          <h2 className="serif text-4xl">New arrivals</h2>
+          <button className="flex items-center gap-2 group text-[11px] uppercase tracking-[0.2em] font-bold">
+            View all <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+          {items.slice(4, 8).map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              title={product.title}
+              price={product.price}
+              image={product.images?.[0]}
+              categoryName={product.category?.name}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="bg-[#1A1A1A] py-32 overflow-hidden">
+         <div className="max-w-3xl mx-auto px-6 text-center space-y-12">
+            <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-500">What our customers say</p>
+            <blockquote className="serif text-3xl md:text-5xl text-white italic leading-snug">
+              "Maison changed the way I think about getting dressed. Every piece I've bought feels considered, beautiful, and built to actually last."
+            </blockquote>
+            <div className="flex flex-col items-center gap-2">
+               <div className="flex gap-1">
+                 {[1,2,3,4,5].map(s => <Star key={s} className="w-3 h-3 text-[var(--accent-color)] fill-[var(--accent-color)]" />)}
+               </div>
+               <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-white">— Laila M., Longtime Customer</p>
+            </div>
+            <div className="flex justify-center gap-2">
+               <div className="w-12 h-[2px] bg-[var(--accent-color)]" />
+               <div className="w-12 h-[2px] bg-white/10" />
+            </div>
+         </div>
+      </section>
     </div>
   );
 }

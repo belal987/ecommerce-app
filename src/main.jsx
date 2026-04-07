@@ -13,30 +13,35 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <MainLayout />,
+      children: [
+        { index: true, element: <ProductsList /> },
+        { path: "/product/:id", element: <ProductDetails /> },
+
+        // Protected route — must be logged in
+        {
+          path: "/cart",
+          element: (
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          ),
+        },
+      ],
+    },
+
+    // Login is outside layout (no navbar)
+    { path: "/login", element: <Login /> },
+    { path: "*", element: <NotFound /> },
+  ],
   {
-    path: "/",
-    element: <MainLayout />,
-    children: [
-      { index: true, element: <ProductsList /> },
-      { path: "/product/:id", element: <ProductDetails /> },
-
-      // Protected route — must be logged in
-      {
-        path: "/cart",
-        element: (
-          <ProtectedRoute>
-            <Cart />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-
-  // Login is outside layout (no navbar)
-  { path: "/login", element: <Login /> },
-  { path: "*", element: <NotFound /> },
-]);
+    basename: "/ecommerce-app/",
+  }
+);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

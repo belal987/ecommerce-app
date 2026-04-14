@@ -18,9 +18,18 @@ export default function ProductDetails() {
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
-    fetch(`https://api.escuelajs.co/api/v1/products/${id}`)
+    fetch(`https://fakestoreapi.com/products/${id}`)
       .then((res) => { if (!res.ok) throw new Error("Not found"); return res.json(); })
-      .then((data) => { setProduct(data); setIsLoading(false); })
+      .then((data) => { 
+        // Map Fakestore structure to app structure
+        const mappedData = {
+          ...data,
+          images: [data.image],
+          category: { name: data.category }
+        };
+        setProduct(mappedData); 
+        setIsLoading(false); 
+      })
       .catch((err) => { setError(err.message); setIsLoading(false); });
   }, [id]);
 

@@ -2,25 +2,39 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
-  async ({ offset = 0, limit = 20, title = "", categoryId = "", priceMin = "", priceMax = "" }) => {
-    let url = `https://api.escuelajs.co/api/v1/products?offset=${offset}&limit=${limit}`;
-    if (title) url += `&title=${title}`;
-    if (categoryId) url += `&categoryId=${categoryId}`;
-    if (priceMin) url += `&price_min=${priceMin}`;
-    if (priceMax) url += `&price_max=${priceMax}`;
-
+  async ({ categoryId = "", limit = 20 }) => {
+    // FakeStoreAPI uses /products/category/:category for specific category
+    let url = "https://fakestoreapi.com/products";
+    if (categoryId) {
+      url = `https://fakestoreapi.com/products/category/${categoryId}`;
+    }
+    
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch products");
-    return res.json();
+    const data = await res.json();
+    
+    // Map FakeStore data format to the app's expected format (EscuelaJS style)
+    return data.map(item => ({
+      ...item,
+      images: [item.image],
+      category: { id: item.category, name: item.category }
+    }));
   }
 );
 
 export const fetchCategories = createAsyncThunk(
   "products/fetchCategories",
   async () => {
-    const res = await fetch("https://api.escuelajs.co/api/v1/categories");
+    const res = await fetch("https://fakestoreapi.com/products/categories");
     if (!res.ok) throw new Error("Failed to fetch categories");
-    return res.json();
+    const categories = await res.json();
+    
+    // Map string categories to object format
+    return categories.map(cat => ({
+      id: cat,
+      name: cat,
+      image: "https://placehold.co/100x100"
+    }));
   }
 );
 
@@ -45,7 +59,7 @@ const productsSlice = createSlice({
   reducers: {
     setFilter: (state, action) => {
       state.filters = { ...state.filters, ...action.payload };
-      state.offset = 0; // Reset pagination when filter changes
+      state.offset = 0;
     },
     resetFilters: (state) => {
       state.filters = initialState.filters;
@@ -69,7 +83,24 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.items = action.payload;
+        // Apply client-side filtering since FakeStoreAPI doesn't support Title/Price filters
+        let filteredItems = action.payload;
+        
+        if (state.filters.title) {
+          filteredItems = filteredItems.filter(item => 
+            item.title.toLowerCase().includes(state.filters.title.toLowerCase())
+          );
+        }
+        
+        if (state.filters.priceMin) {
+          filteredItems = filteredItems.filter(item => item.price >= parseFloat(state.filters.priceMin));
+        }
+        
+        if (state.filters.priceMax) {
+          filteredItems = filteredItems.filter(item => item.price <= parseFloat(state.filters.priceMax));
+        }
+
+        state.items = filteredItems;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.isLoading = false;

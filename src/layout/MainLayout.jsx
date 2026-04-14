@@ -35,7 +35,7 @@ const MainLayout = () => {
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-10">
             {[
-              { label: "New Arrivals", path: "/new-arrivals" },
+              { label: "Shop All", path: "/shop" },
               { label: "Women", path: "/women" },
               { label: "Men", path: "/men" },
               { label: "Home", path: "/home-collection" },

@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 
 // Step 1: Define Zod schema (the blueprint)
@@ -96,6 +96,16 @@ export default function Login() {
             {isSubmitting ? "Signing in..." : "Sign In"}
           </button>
         </form>
+
+        {/* Sign up link */}
+        <div className="mt-8 text-center pt-6 border-t border-gray-100">
+          <p className="text-sm text-gray-500">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-black font-bold hover:underline">
+              Create one
+            </Link>
+          </p>
+        </div>
 
         {/* Hint for testing */}
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">

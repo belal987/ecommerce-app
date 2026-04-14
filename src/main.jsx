@@ -11,8 +11,10 @@ import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import Shop from "./pages/Shop";
 import CategoryPage from "./pages/CategoryPage";
 
 const router = createBrowserRouter(
@@ -22,6 +24,7 @@ const router = createBrowserRouter(
       element: <MainLayout />,
       children: [
         { index: true, element: <ProductsList /> },
+        { path: "/shop", element: <Shop /> },
         { path: "/product/:id", element: <ProductDetails /> },
         
         // Category Routes
@@ -58,8 +61,9 @@ const router = createBrowserRouter(
       ],
     },
 
-    // Login is outside layout (no navbar)
+    // Auth Routes
     { path: "/login", element: <Login /> },
+    { path: "/register", element: <Register /> },
     { path: "*", element: <NotFound /> },
   ]
 );

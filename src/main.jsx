@@ -61,10 +61,7 @@ const router = createBrowserRouter(
     // Login is outside layout (no navbar)
     { path: "/login", element: <Login /> },
     { path: "*", element: <NotFound /> },
-  ],
-  {
-    basename: "/ecommerce-app/",
-  }
+  ]
 );
 
 createRoot(document.getElementById("root")).render(

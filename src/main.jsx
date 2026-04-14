@@ -34,15 +34,15 @@ const router = createBrowserRouter(
         },
         { 
           path: "/women", 
-          element: <CategoryPage categoryId="1" /> 
+          element: <CategoryPage categoryId="women's clothing" /> 
         },
         { 
           path: "/men", 
-          element: <CategoryPage categoryId="2" /> 
+          element: <CategoryPage categoryId="men's clothing" /> 
         },
         { 
           path: "/home-collection", 
-          element: <CategoryPage categoryId="3" /> 
+          element: <CategoryPage categoryId="jewelery" /> 
         },
         { 
           path: "/sale", 

@@ -4,7 +4,7 @@ import { fetchProducts, fetchCategories, setFilter, resetFilters, nextPage, prev
 import ProductCard from "../components/ProductCard";
 import FilterSidebar from "../components/FilterSidebar";
 import CategoryManager from "../components/CategoryManager";
-import { ChevronLeft, ChevronRight, LayoutGrid, List, SlidersHorizontal, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, LayoutGrid, List, SlidersHorizontal, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Shop() {
@@ -50,14 +50,27 @@ export default function Shop() {
           <main className="flex-1 space-y-12">
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm gap-4">
-               <div className="flex items-center gap-6">
+               <div className="flex items-center gap-6 flex-1">
                  <button 
                    onClick={() => setShowMobileFilters(true)}
                    className="lg:hidden flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest"
                  >
                    <SlidersHorizontal className="w-4 h-4" /> Filters
                  </button>
-                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                 
+                 {/* Prominent Shop Search */}
+                 <div className="relative hidden sm:flex flex-1 max-w-md items-center group">
+                    <Search className="absolute left-4 w-4 h-4 text-gray-400 group-focus-within:text-black transition-colors" />
+                    <input 
+                      type="text"
+                      placeholder="Search for pieces..."
+                      className="w-full bg-gray-50 border-none rounded-full py-2.5 pl-12 pr-4 text-[11px] uppercase tracking-widest font-bold outline-none focus:bg-white focus:ring-1 focus:ring-black transition-all"
+                      value={filters.title}
+                      onChange={(e) => dispatch(setFilter({ title: e.target.value }))}
+                    />
+                 </div>
+
+                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 whitespace-nowrap ml-auto">
                    Showing <span className="text-black">{items.length}</span> Results
                  </p>
                </div>

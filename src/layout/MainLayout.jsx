@@ -1,17 +1,30 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilter } from "../store/productsSlice";
 import useThemeStore from "../store/useThemeStore";
 import useAuthStore from "../store/useAuthStore";
 import { useLanguage } from "../context/LanguageContext";
-import { ShoppingBag, User, Globe, Moon, Sun, LogOut } from "lucide-react";
+import { ShoppingBag, User, Globe, Moon, Sun, LogOut, Search, X } from "lucide-react";
+import { useState } from "react";
 
 const MainLayout = () => {
+  const dispatch = useDispatch();
+  const searchTitle = useSelector((state) => state.products.filters.title);
   const cartItems = useSelector((state) => state.cart.cartItems);
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const { theme, toggleTheme } = useThemeStore();
   const { language, toggleLanguage } = useLanguage();
   const { token, logout } = useAuthStore();
   const navigate = useNavigate();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    dispatch(setFilter({ title: value }));
+    if (window.location.pathname !== "/shop" && value.length > 0) {
+      navigate("/shop");
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -49,6 +62,25 @@ const MainLayout = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-6">
+            {/* Search Bar */}
+            <div className={`flex items-center gap-3 transition-all duration-500 overflow-hidden ${isSearchOpen ? "w-48 md:w-64 bg-gray-50 dark:bg-white/5 px-4 py-2 rounded-full border border-black/5" : "w-10 h-10 justify-center"}`}>
+               <button 
+                 onClick={() => setIsSearchOpen(!isSearchOpen)}
+                 className="hover:opacity-60 transition-opacity flex-shrink-0"
+               >
+                 {isSearchOpen ? <X className="w-4 h-4 text-gray-400" /> : <Search className="w-4 h-4" />}
+               </button>
+               {isSearchOpen && (
+                 <input 
+                   autoFocus
+                   type="text"
+                   placeholder="SEARCH CATALOGUE..."
+                   className="bg-transparent border-none outline-none text-[8px] md:text-[10px] uppercase tracking-widest w-full font-bold"
+                   value={searchTitle}
+                   onChange={handleSearch}
+                 />
+               )}
+            </div>
             <button onClick={toggleLanguage} className="hover:opacity-60 transition-opacity">
               <Globe className="w-4 h-4" />
             </button>
